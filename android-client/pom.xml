@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.dfens.demo</groupId>
+    <artifactId>dfens-demo-app</artifactId>
+    <packaging>apk</packaging>
+    <name>${project.groupId}::${project.artifactId}</name>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <git.prefix>scm:git:ssh://git@github.com:mattiasrosberg</git.prefix>
+    </properties>
+
+    <scm>
+        <connection>${git.prefix}/dfens-io.git</connection>
+        <developerConnection>${git.prefix}/dfens-io.git</developerConnection>
+        <tag></tag>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>4.1.1.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.androidannotations</groupId>
+            <artifactId>androidannotations</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.androidannotations</groupId>
+            <artifactId>androidannotations-api</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/res</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/filtered-res</targetPath>
+            </resource>
+        </resources>
+        <!--<finalName>${artifactId}</finalName> -->
+        <sourceDirectory>${project.basedir}/src</sourceDirectory>
+
+        <plugins>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.1.8</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>git.properties</generateGitPropertiesFilename>
+                    <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+                    <gitDescribe>
+                        <skip>false</skip>
+                        <abbrev>6</abbrev>
+                        <dirty>-dirty</dirty>
+                    </gitDescribe>
+                    <dateFormat>yyMMdd - HH:mm</dateFormat>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>sign-for-android</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <archiveDirectory/>
+                            <arguments>
+                                <argument>-sigalg</argument>
+                                <argument>${signing.algorithm}</argument>
+                                <argument>-digestalg</argument>
+                                <argument>SHA1</argument>
+                            </arguments>
+                            <includes>
+                                <include>${project.basedir}/target/*.{project.packaging}</include>
+                            </includes>
+                            <keystore>${keystore.location}</keystore>
+                            <alias>${keystore.alias}</alias>
+                            <storepass>${keystore.password}</storepass>
+                            <keypass>${keystore.key.password}</keypass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- The maven resources plugin lets us filter android resources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>4.0.0-rc.2</version>
+                <executions>
+                    <execution>
+                        <id>alignApk</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>zipalign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sign>
+                        <debug>
+                            false
+                        </debug>
+                    </sign>
+                    <sdk>
+                        <path>${env.ANDROID_HOME}</path>
+                        <!-- <path>C:/Program Files/Android/android-sdk</path> -->
+                        <platform>10</platform>
+                    </sdk>
+                    <!-- <proguard><skip>false</skip></proguard> -->
+                    <!--<deleteConflictingFiles>true</deleteConflictingFiles>-->
+                    <resourceDirectory>${project.build.directory}/filtered-res</resourceDirectory>
+                    <!-- Setting another package name to app -->
+                    <renameManifestPackage>${config.app.packagename}</renameManifestPackage>
+                    <zipalign>
+                        <verbose>false</verbose>
+                        <skip>false</skip>
+                        <outputApk>
+                            ${project.basedir}/target/${project.artifactId}-${project.version}-${git.commit.id.describe}-${config.build.profile}-aligned.${project.packaging}
+                        </outputApk>
+                    </zipalign>
+                    <dex>
+                        <jvmArguments>
+                            <argument>-Xmx1000m</argument>
+                        </jvmArguments>
+                    </dex>
+                </configuration>
+                <extensions>true</extensions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <verbose>true</verbose>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <configuration>
+                    <outputDirectory>/absolute/path/to/the/output/directory</outputDirectory>
+                    <finalName>filename-of-generated-jar-file</finalName>
+                    <attach>false</attach>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
