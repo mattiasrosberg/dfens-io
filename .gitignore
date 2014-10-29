@@ -24,3 +24,59 @@ proguard/
 
 # Log Files
 *.log
+
+# Android application files
+*.apk
+*.ap_
+*.dex
+
+# Java class files
+*.class
+
+# Eclipse files
+bin/
+gen/
+.project
+.metadata
+.classpath
+.settings/
+.apt_generated/
+.factorypath
+
+#Maven
+target/
+git.properties
+
+# Project specific
+*.tmp
+*.bak
+
+
+# Eclipse generated files
+/bin
+.settings/
+.classpath
+.project
+.springBeans
+
+#Intellij IDEA files
+.idea/
+*.iws
+*.ipr
+*.iml
+out/
+gen-external-apklibs/
+
+# OS generated files #
+.DS_Store*
+ehthumbs.db
+Thumbs.db
+
+# Project generated files
+.svn/
+**/logs/*.log
+**/src/main/**/rebel.xml
+git.properties
+
+/classes
+
