@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dfens.demo</groupId>
     <artifactId>dfens-demo-app</artifactId>
@@ -8,15 +8,35 @@
     <name>${project.groupId}::${project.artifactId}</name>
     <version>0.1.0-SNAPSHOT</version>
 
+    <prerequisites>
+        <maven>3.1.1</maven>
+    </prerequisites>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <git.prefix>scm:git:ssh://git@github.com:mattiasrosberg</git.prefix>
+
+        <git.prefix>scm:git:ssh://git@github.com:mattiasrosberg/dfens-io.git</git.prefix>
+
+        <!-- Determines if the dex files should be optimized. This should be true except for dev builds (as it adds time to the build). -->
+        <android.dex.optimize>true</android.dex.optimize>
+        <!-- Turns on pre-dexing, which speeds up reoccuring builds. -->
+        <android.dex.preDex>false</android.dex.preDex>
+        <!-- Makes dexing incremental, so that only changed libraries are re-dexed. This speeds up reoccuring builds. -->
+        <android.dex.incremental>true</android.dex.incremental>
+        <!-- Skips zip-alignment. This should be turned on for dev builds, to improve build time. -->
+        <andriod.zipAlign.skip>false</andriod.zipAlign.skip>
+        <!-- Allow for easy overriding of the final name through command line options. -->
+        <finalName>${project.artifactId}-${project.version}</finalName>
+
+        <!-- Due to a bug in Maven we need to expose the timestamp this way. See http://jira.codehaus.org/browse/MRESOURCES-99 -->
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     </properties>
 
     <scm>
-        <connection>${git.prefix}/dfens-io.git</connection>
-        <developerConnection>${git.prefix}/dfens-io.git</developerConnection>
-        <tag></tag>
+        <connection>${git.prefix}/mobi-android-priv.git</connection>
+        <developerConnection>${git.prefix}/mobi-android-priv.git</developerConnection>
+        <tag>${project.artifactId}-${project.version}</tag>
     </scm>
 
     <dependencies>
@@ -27,26 +47,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.4</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.androidannotations</groupId>
             <artifactId>androidannotations</artifactId>
             <version>3.0.1</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.androidannotations</groupId>
-            <artifactId>androidannotations-api</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
         </dependency>
     </dependencies>
 
@@ -57,11 +61,36 @@
                 <filtering>true</filtering>
                 <targetPath>${project.build.directory}/filtered-res</targetPath>
             </resource>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <includes>
+                    <!-- We need to filter the Android Manifest so that we can add extra permissions and activties for dev builds -->
+                    <include>AndroidManifest.xml</include>
+                    <!-- We'll include version info in a text file for our continuous build. -->
+                    <include>version.txt</include>
+                </includes>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}</targetPath>
+            </resource>
         </resources>
-        <!--<finalName>${artifactId}</finalName> -->
+        <!-- We'll get the finalName from a property only because we want to be able to easily override it on the command line. -->
+        <finalName>${finalName}</finalName>
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
 
         <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/libs</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -98,7 +127,7 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <archiveDirectory/>
+                            <archiveDirectory />
                             <arguments>
                                 <argument>-sigalg</argument>
                                 <argument>${signing.algorithm}</argument>
@@ -135,7 +164,7 @@
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>4.0.0-rc.2</version>
+                <version>3.9.0-rc.2</version>
                 <executions>
                     <execution>
                         <id>alignApk</id>
@@ -146,6 +175,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- Use the filtered manifest -->
+                    <androidManifestFile>${project.build.directory}/AndroidManifest.xml</androidManifestFile>
+                    <release>${config.isRelease}</release>
                     <sign>
                         <debug>
                             false
@@ -154,7 +186,7 @@
                     <sdk>
                         <path>${env.ANDROID_HOME}</path>
                         <!-- <path>C:/Program Files/Android/android-sdk</path> -->
-                        <platform>10</platform>
+                        <platform>19</platform>
                     </sdk>
                     <!-- <proguard><skip>false</skip></proguard> -->
                     <!--<deleteConflictingFiles>true</deleteConflictingFiles>-->
@@ -163,7 +195,7 @@
                     <renameManifestPackage>${config.app.packagename}</renameManifestPackage>
                     <zipalign>
                         <verbose>false</verbose>
-                        <skip>false</skip>
+                        <skip>${andriod.zipAlign.skip}</skip>
                         <outputApk>
                             ${project.basedir}/target/${project.artifactId}-${project.version}-${git.commit.id.describe}-${config.build.profile}-aligned.${project.packaging}
                         </outputApk>
@@ -172,6 +204,9 @@
                         <jvmArguments>
                             <argument>-Xmx1000m</argument>
                         </jvmArguments>
+                        <optimize>${android.dex.optimize}</optimize>
+                        <preDex>${android.dex.preDex}</preDex>
+                        <incremental>${android.dex.incremental}</incremental>
                     </dex>
                 </configuration>
                 <extensions>true</extensions>
@@ -203,6 +238,47 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.4</version>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <excludeFilterFile>../etc/environment/findbugs_exclude.xml</excludeFilterFile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <!-- Signing properties -->
+                <keystore.location>${project.basedir}/../etc/certificates/debug/debug.keystore</keystore.location>
+                <keystore.alias>androiddebugkey</keystore.alias>
+                <keystore.password>android</keystore.password>
+                <keystore.key.password>android</keystore.key.password>
+                <signing.algorithm>MD5withRSA</signing.algorithm>
+
+                <!-- Don't optimize when doing dev builds, to save on build time. -->
+                <android.dex.optimize>false</android.dex.optimize>
+                <android.dex.preDex>false</android.dex.preDex>
+                <android.dex.incremental>true</android.dex.incremental>
+                <andriod.zipAlign.skip>true</andriod.zipAlign.skip>
+
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <!-- A profile which turns on zipalign. This should only be used if you're building with the dev profile
+            and wants to also get a zip-aligned artifact.
+            Call Maven as thus: mvn -P dev,zipalign install -->
+            <id>zipalign</id>
+            <properties>
+                <andriod.zipAlign.skip>false</andriod.zipAlign.skip>
+            </properties>
+        </profile>
+
+    </profiles>
 </project>
