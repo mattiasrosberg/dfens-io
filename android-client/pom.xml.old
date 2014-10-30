@@ -14,35 +14,19 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- configuration for units.xml in android resources -->
-        <config.google.maps.key>0GUnZZ4HSvpwkQQq5eZhbPs9VlJ6eHfyhTgkxSw</config.google.maps.key>
-        <git.prefix>scm:git:ssh://git@apptest.shbmain.shb.biz</git.prefix>
-        <config.api.version>1.3:6.1</config.api.version>
-        <config.url.base.open>https://m.handelsbanken.se/open/entrypoint/priv</config.url.base.open>
+
+        <git.prefix>scm:git:ssh://git@github.com:mattiasrosberg/dfens-io.git</git.prefix>
+
         <!-- Determines if the dex files should be optimized. This should be true except for dev builds (as it adds time to the build). -->
         <android.dex.optimize>true</android.dex.optimize>
         <!-- Turns on pre-dexing, which speeds up reoccuring builds. -->
-        <android.dex.preDex>false</android.dex.preDex>
+        <android.dex.preDex>true</android.dex.preDex>
         <!-- Makes dexing incremental, so that only changed libraries are re-dexed. This speeds up reoccuring builds. -->
         <android.dex.incremental>true</android.dex.incremental>
         <!-- Skips zip-alignment. This should be turned on for dev builds, to improve build time. -->
         <andriod.zipAlign.skip>false</andriod.zipAlign.skip>
         <!-- Allow for easy overriding of the final name through command line options. -->
         <finalName>${project.artifactId}-${project.version}</finalName>
-
-        <!-- ACRA crash reporting settings. These are empty/disabled by default and then turned on for ACRA builds. -->
-        <!-- The URI to which ACRA should send crash reports. -->
-        <config.acra.formUri></config.acra.formUri>
-        <!-- If ACRA is enabled or not. Defaults to false. -->
-        <config.acra.enabled>false</config.acra.enabled>
-
-        <!-- This allows you to add extra permissions to the manifest. -->
-        <manifest.extras.permissions></manifest.extras.permissions>
-        <!-- This allows you to add anything extra under the <application> tag in the manifest. -->
-        <manifest.extras.application></manifest.extras.application>
-
-        <!-- The version of ACRA to use. -->
-        <version.acra>4.5.0</version.acra>
 
         <!-- Due to a bug in Maven we need to expose the timestamp this way. See http://jira.codehaus.org/browse/MRESOURCES-99 -->
         <timestamp>${maven.build.timestamp}</timestamp>
@@ -63,30 +47,17 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.android.maps</groupId>
-            <artifactId>maps</artifactId>
-            <version>7_r1</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--<dependency>-->
-        <!--<groupId>commons-codec</groupId>-->
-        <!--<artifactId>commons-codec</artifactId>-->
-        <!--<version>1.5</version>-->
-        <!--<type>jar</type>-->
-        <!--<scope>compile</scope>-->
-        <!--</dependency>-->
-        <dependency>
             <groupId>org.androidannotations</groupId>
             <artifactId>androidannotations</artifactId>
-            <version>3.1</version>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.androidannotations</groupId>
             <artifactId>androidannotations-api</artifactId>
-            <version>3.1</version>
+            <version>3.0.1</version>
+            <scope>provided</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -113,19 +84,6 @@
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
 
         <plugins>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${project.basedir}/libs</directory>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -231,9 +189,6 @@
                     <zipalign>
                         <verbose>false</verbose>
                         <skip>${andriod.zipAlign.skip}</skip>
-                        <outputApk>
-                            dfens-demo-app.apk
-                        </outputApk>
                         <!--<outputApk>-->
                             <!--${project.basedir}/target/${project.artifactId}-${project.version}-${git.commit.id.describe}-${config.build.profile}-aligned.${project.packaging}-->
                         <!--</outputApk>-->
@@ -298,9 +253,9 @@
                 <signing.algorithm>MD5withRSA</signing.algorithm>
 
                 <!-- Don't optimize when doing dev builds, to save on build time. -->
-                <!--<android.dex.optimize>false</android.dex.optimize>-->
-                <!--<android.dex.preDex>false</android.dex.preDex>-->
-                <!--<android.dex.incremental>true</android.dex.incremental>-->
+                <android.dex.optimize>false</android.dex.optimize>
+                <android.dex.preDex>false</android.dex.preDex>
+                <android.dex.incremental>true</android.dex.incremental>
                 <andriod.zipAlign.skip>true</andriod.zipAlign.skip>
 
             </properties>
