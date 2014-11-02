@@ -10,8 +10,12 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Fullscreen;
+import org.androidannotations.annotations.NoTitle;
 import org.androidannotations.annotations.UiThread;
 
+@Fullscreen
+@NoTitle
 @EActivity
 public class Splash extends Activity {
 
@@ -45,7 +49,7 @@ public class Splash extends Activity {
 
     @UiThread
     protected void updateUI() {
-        startActivity(new Intent(this, MyActivity_.class));
+        startActivity(new Intent(this, PinActivity_.class));
         finish();
     }
 

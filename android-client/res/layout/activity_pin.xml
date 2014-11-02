@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:animateLayoutChanges="true"
+              android:background="#ffffff"
+        >
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center"
+              android:textColor="#000000"
+              android:text="Sign in" android:textSize="24sp" android:layout_marginBottom="30dip"
+              android:layout_marginTop="10dip"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:layout_marginLeft="30dip" android:layout_marginRight="30dip" android:background="#330000ff">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#000000"
+                  android:text="Username" android:layout_marginLeft="10dip"
+                  android:textSize="18sp"/>
+        <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:layout_marginRight="10dip"
+                android:gravity="right|center_vertical"
+                android:minHeight="50dp"
+                />
+    </LinearLayout>
+
+    <Button android:id="@+id/username_ok_button"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dip"
+            android:layout_marginLeft="30dip" android:layout_marginRight="30dip" android:background="#3300ff00"
+            android:text="OK" android:textColor="#000000" android:textSize="22sp"/>
+
+
+    <LinearLayout android:id="@+id/pin_layout" android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="vertical" android:visibility="gone">
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#000000"
+              android:layout_marginTop="20dip" android:layout_marginBottom="20dip"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:animateLayoutChanges="true"
+                      android:layout_marginLeft="30dip" android:layout_marginRight="30dip"
+                      android:background="#330000ff">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:textColor="#000000"
+                      android:text="PIN" android:layout_marginLeft="10dip"
+                      android:textSize="18sp"/>
+            <TextView android:id="@+id/pin_code_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#000000"
+                    android:textSize="22sp"
+                    android:layout_marginRight="10dip"
+                    android:gravity="right|center_vertical"
+                    android:minHeight="50dp"
+                    />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:layout_marginLeft="30dp" android:layout_marginRight="30dip"
+                      android:layout_marginTop="30dip">
+            <Button android:id="@+id/button_1" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="1" android:onClick="clickPINKeyboard"/>
+            <Button android:id="@+id/button_2" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="2" android:onClick="clickPINKeyboard"/>
+            <Button android:id="@+id/button_3" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="3" android:onClick="clickPINKeyboard"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:layout_marginLeft="30dp" android:layout_marginRight="30dp">
+            <Button android:id="@+id/button_4" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="4" android:onClick="clickPINKeyboard"/>
+            <Button android:id="@+id/button_5" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="5" android:onClick="clickPINKeyboard"/>
+            <Button android:id="@+id/button_6" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="6" android:onClick="clickPINKeyboard"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:layout_marginLeft="30dp" android:layout_marginRight="30dp">
+            <Button android:id="@+id/button_7" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="7" android:onClick="clickPINKeyboard"/>
+            <Button android:id="@+id/button_8" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="8" android:onClick="clickPINKeyboard"/>
+            <Button android:id="@+id/button_9" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="9" android:onClick="clickPINKeyboard"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:layout_marginLeft="30dp" android:layout_marginRight="30dp">
+            <Button android:id="@+id/button_del" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="DEL" android:onClick="clickPINKeyboard"/>
+            <Button android:id="@+id/button_0" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0" android:onClick="clickPINKeyboard"/>
+            <Button android:id="@+id/button_enter" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="OK" android:onClick="clickPINKeyboard"/>
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#000000"
+              android:layout_marginTop="20dip"/>
+
+    </LinearLayout>
+</LinearLayout>
+
