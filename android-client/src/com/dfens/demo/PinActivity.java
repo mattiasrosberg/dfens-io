@@ -1,6 +1,7 @@
 package com.dfens.demo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -41,6 +42,10 @@ public class PinActivity extends Activity {
 
     public void clickPINKeyboard(View button) {
         switch (button.getId()) {
+            case R.id.button_enter:
+                if(enteredPINCode.size() == 4){
+                    startActivity(new Intent(this, DeviceListActivity_.class));
+                }
             case R.id.button_del:
                 if (enteredPINCode.size() > 0) {
                     enteredPINCode.remove(enteredPINCode.size() - 1);

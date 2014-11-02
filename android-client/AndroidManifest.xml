@@ -15,6 +15,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PinActivity_" />
+        <activity android:name=".PinActivity_" android:configChanges="keyboard|orientation|screenSize"/>
+        <activity android:name=".DeviceListActivity_" android:configChanges="keyboard|orientation|screenSize"/>
     </application>
 </manifest>
