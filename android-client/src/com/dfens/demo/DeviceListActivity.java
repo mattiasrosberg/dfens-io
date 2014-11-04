@@ -1,38 +1,17 @@
 package com.dfens.demo;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import com.dfens.demo.domain.DfensEventResponse;
 import com.dfens.demo.domain.PollEventResponse;
-import com.dfens.demo.network.HttpClientUtils;
-import com.google.gson.Gson;
+import com.dfens.demo.network.NetClient;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.NoTitle;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
 
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,41 +23,62 @@ import java.util.TimerTask;
 @EActivity(R.layout.activity_device_list)
 public class DeviceListActivity extends Activity {
 
+    @Bean
+    NetClient netClient;
+
     private Timer pollTimer = new Timer();
 
-    private TimerTask checkForEventTask = new TimerTask() {
+    private class CheckForEventTask extends TimerTask {
 
         @Override
         public void run() {
             try {
-                DefaultHttpClient client = HttpClientUtils.getAllTrustingHttpClient();
-                HttpGet httpGet = new HttpGet("https://mattias:kalaskartoffel49@2.248.42.179:6984/events/_changes?since=1");
-                HttpResponse response = client.execute(httpGet);
+                SharedPreferences prefs = getSharedPreferences("Dfens", MODE_PRIVATE);
+                PollEventResponse pollEventResponse = netClient.getAllEventsSinceSeqNo(prefs.getInt("maxSeqNo", 0));
+                Log.d("Dfens", "Number of events:" + pollEventResponse.results.size() + "     SeqNo:" + prefs.getInt("maxSeqNo", 0) + ", LastSeqNo: " + pollEventResponse.last_seq);
 
-                if (response.getStatusLine().getStatusCode() == 200) {
-                    InputStream is = response.getEntity().getContent();
-                    int a = 0;
-                    StringBuilder buf = new StringBuilder();
-                    while ((a = is.read()) != -1) {
-                        buf.append((char) a);
+                if (pollEventResponse.results.size() > 0) {
+                    DfensEventResponse dfensEventResponse = netClient.getEventDetails(pollEventResponse.results.get(0).id);
+                    if (dfensEventResponse.event != null) {
+                        startActivityForResult(new EventDialogActivity.Constructor(DeviceListActivity.this, dfensEventResponse.event, pollEventResponse.last_seq), 0);
+                    } else {
+                        Log.d("Dfens", "No dfens events to deal with");
                     }
-
-                    Gson gson = new Gson();
-                    PollEventResponse pollEventResponse = gson.fromJson(buf.toString(), PollEventResponse.class);
-
-                    Log.d("Dfens", "Number of events:" + pollEventResponse.results.size());
+                } else {
+                    Log.d("Dfens", "No events from polling");
                 }
+
+//                Status status = netClient.sendKeepBlockCommand(dfensEventResponse.event.get(0));
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    };
+    }
+
+    ;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            pollTimer.cancel();
+            pollTimer = new Timer();
+            pollTimer.scheduleAtFixedRate(new CheckForEventTask(), 2000, 3000);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pollTimer.scheduleAtFixedRate(checkForEventTask, 2000, 3000);
+
+        pollTimer.scheduleAtFixedRate(new CheckForEventTask(), 2000, 3000);
+//        pollTimer.schedule(checkForEventTask, 2000);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        pollTimer.cancel();
+    }
 }

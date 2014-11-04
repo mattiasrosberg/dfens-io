@@ -9,7 +9,10 @@ public class PollEventResponse {
 
     public final List<PollEvent> results;
 
-    public PollEventResponse(List<PollEvent> results) {
+    public final int last_seq;
+
+    public PollEventResponse(List<PollEvent> results, int last_seq) {
         this.results = results;
+        this.last_seq = last_seq;
     }
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:background="#33ffff"
+        >
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Warning"
+            android:textSize="24sp"
+            android:textColor="#000000"
+            android:layout_margin="10dp"
+            android:layout_marginBottom="20dp"
+            />
+
+    <TextView
+            android:id="@+id/event_handler_event_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:layout_margin="10dp"
+            android:textSize="18dp"
+            android:text="something wonderful's gonna happen"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+        <Button
+                android:id="@+id/event_handler_unblock_button"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="#ff0000"
+                android:layout_marginRight="5dp"
+                android:text="Unblock"/>
+        <Button
+                android:id="@+id/event_handler_keep_block_button"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:background="#00ff00"
+                android:text="OK"/>
+    </LinearLayout>
+</LinearLayout>
+
