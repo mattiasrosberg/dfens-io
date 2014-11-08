@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.dfens.demo.network.NetClient;
@@ -54,6 +56,9 @@ public class Splash extends Activity {
 
         setContentView(splashImage, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT));
+
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        splashImage.startAnimation(fadeInAnimation );
     }
 
     @Background

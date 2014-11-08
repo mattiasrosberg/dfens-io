@@ -43,8 +43,9 @@ public class PinActivity extends Activity {
     public void clickPINKeyboard(View button) {
         switch (button.getId()) {
             case R.id.button_enter:
-                if(enteredPINCode.size() == 4){
+                if (enteredPINCode.size() == 4) {
                     startActivity(new Intent(this, DeviceListActivity_.class));
+                    finish();
                 }
             case R.id.button_del:
                 if (enteredPINCode.size() > 0) {

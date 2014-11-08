@@ -1,19 +1,18 @@
 package com.dfens.demo;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
-import com.dfens.demo.domain.DfensEventResponse;
-import com.dfens.demo.domain.PollEventResponse;
+import com.dfens.demo.domain.DfensEvent;
 import com.dfens.demo.network.NetClient;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.NoTitle;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by mattias on 2014-11-02.
@@ -26,59 +25,85 @@ public class DeviceListActivity extends Activity {
     @Bean
     NetClient netClient;
 
-    private Timer pollTimer = new Timer();
+    @Extra(Constructor.EXTRAS_DFENS_EVENT)
+    DfensEvent event;
 
-    private class CheckForEventTask extends TimerTask {
+    @Extra(Constructor.EXTRAS_DFENS_EVENT_SEQ_NO)
+    int seqNo;
 
+    private BroadcastReceiver dfensEventReceiver = new BroadcastReceiver() {
         @Override
-        public void run() {
-            try {
-                SharedPreferences prefs = getSharedPreferences("Dfens", MODE_PRIVATE);
-                PollEventResponse pollEventResponse = netClient.getAllEventsSinceSeqNo(prefs.getInt("maxSeqNo", 0));
-                Log.d("Dfens", "Number of events:" + pollEventResponse.results.size() + "     SeqNo:" + prefs.getInt("maxSeqNo", 0) + ", LastSeqNo: " + pollEventResponse.last_seq);
+        public void onReceive(Context context, Intent intent) {
+            event = ((DfensApplication) getApplication()).getDfensEvent();
+            seqNo = ((DfensApplication) getApplication()).getSeqNo();
+            startEventHandlerActivity(event, seqNo);
+        }
+    };
 
-                if (pollEventResponse.results.size() > 0) {
-                    DfensEventResponse dfensEventResponse = netClient.getEventDetails(pollEventResponse.results.get(0).id);
-                    if (dfensEventResponse.event != null) {
-                        startActivityForResult(new EventDialogActivity.Constructor(DeviceListActivity.this, dfensEventResponse.event, pollEventResponse.last_seq), 0);
-                    } else {
-                        Log.d("Dfens", "No dfens events to deal with");
-                    }
-                } else {
-                    Log.d("Dfens", "No events from polling");
-                }
+    public static class Constructor extends Intent {
 
-//                Status status = netClient.sendKeepBlockCommand(dfensEventResponse.event.get(0));
+        public static final String EXTRAS_DFENS_EVENT = "extras-dfens-event";
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        public static final String EXTRAS_DFENS_EVENT_SEQ_NO = "extras-dfens-event-seq-no";
+
+        public Constructor(Context context, DfensEvent event, int seqNo) {
+            super(context, DeviceListActivity_.class);
+            putExtra(EXTRAS_DFENS_EVENT, event);
+            putExtra(EXTRAS_DFENS_EVENT_SEQ_NO, seqNo);
+            setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TOP);
         }
     }
 
-    ;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            pollTimer.cancel();
-            pollTimer = new Timer();
-            pollTimer.scheduleAtFixedRate(new CheckForEventTask(), 2000, 3000);
+
+            //Start poll service again
+            startPollService();
+            Log.d("Dfens", "DeviceListActivity...starting poll service after returning from user dialog");
+
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("Dfens", "OnCreate DeviceListActivity...");
 
-        pollTimer.scheduleAtFixedRate(new CheckForEventTask(), 2000, 3000);
-//        pollTimer.schedule(checkForEventTask, 2000);
+        if (event != null) {
+            //Receiving event from service
+            Log.d("Dfens", "DeviceListActivity...receiving event from Service. " + seqNo);
+//            startActivityForResult(new EventDialogActivity.Constructor(DeviceListActivity.this, event, seqNo), 0);
+            startEventHandlerActivity(event, seqNo);
+        } else {
+            Log.d("Dfens", "DeviceListActivity...starting poll service.");
+            startPollService();
+        }
+
+        IntentFilter intentFilter = new IntentFilter("new_dfens_event");
+        registerReceiver(dfensEventReceiver, intentFilter);
+
+    }
+
+    private void startEventHandlerActivity(DfensEvent dfensEvent, int sequenceNo) {
+        startActivityForResult(new EventDialogActivity.Constructor(DeviceListActivity.this, dfensEvent, sequenceNo), 0);
+    }
+
+
+    private void startPollService() {
+        //Start poll service
+        PollService_.intent(getApplication()).pollUntilEventFound().start();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        pollTimer.cancel();
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            unregisterReceiver(dfensEventReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
