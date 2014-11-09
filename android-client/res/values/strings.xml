@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">android-client</string>
+    <string name="app_name">dfens</string>
 
     <string name="base_url">https://mattias:kalaskartoffel49@2.248.42.179:6984</string>
 </resources>

@@ -35,10 +35,10 @@ public class PinActivity extends Activity {
         super.onCreate(savedInstanceState);
     }
 
-    @Click(R.id.username_ok_button)
-    public void onClickOkButton(View button) {
-        pinLayout.setVisibility(View.VISIBLE);
-    }
+//    @Click(R.id.username_ok_button)
+//    public void onClickOkButton(View button) {
+//        pinLayout.setVisibility(View.VISIBLE);
+//    }
 
     public void clickPINKeyboard(View button) {
         switch (button.getId()) {
