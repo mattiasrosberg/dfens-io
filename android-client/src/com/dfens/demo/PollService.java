@@ -9,6 +9,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.util.Log;
+import com.dfens.demo.domain.DfensEvent;
 import com.dfens.demo.domain.DfensEventResponse;
 import com.dfens.demo.domain.PollEventResponse;
 import com.dfens.demo.network.NetClient;
@@ -55,7 +56,7 @@ public class PollService extends IntentService {
                         Log.d("Dfens", "Passing Dfens event from service to DeviceListActivity..." + pollEventResponse.last_seq);
                         Intent startActivityIntent = new DeviceListActivity.Constructor(PollService.this, dfensEventResponse.event, pollEventResponse.last_seq);
                         if (isApplicationSentToBackground(this)) {
-                            createNotification(startActivityIntent);
+                            createNotification(startActivityIntent, dfensEventResponse.event);
                         } else {
                             ((DfensApplication) getApplication()).setDfensEvent(dfensEventResponse.event);
                             ((DfensApplication) getApplication()).setSeqNo(pollEventResponse.last_seq);
@@ -95,7 +96,7 @@ public class PollService extends IntentService {
 
     }
 
-    public void createNotification(Intent startActivityIntent) {
+    public void createNotification(Intent startActivityIntent, DfensEvent event) {
         // Prepare intent which is triggered if the
         // notification is selected
 
@@ -106,8 +107,8 @@ public class PollService extends IntentService {
         // Build notification
         // Actions are just fake
         Notification noti = new Notification.Builder(this)
-                .setContentTitle("New Dfens event")
-                .setContentText("Click here to take action").setSmallIcon(R.drawable.dfens_notification_icon)
+                .setContentTitle("Dfens blocked " + event.client_name)
+                .setContentText("Request to " + event.url + " has been blocked.").setSmallIcon(R.drawable.dfens_notification_icon)
                 .setContentIntent(pIntent).setVibrate(new long[]{1000, 1000, 1000, 1000, 1000}).setSound(alarmSound)
                 .build();
 
