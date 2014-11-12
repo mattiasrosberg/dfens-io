@@ -1,13 +1,11 @@
 package com.dfens.demo;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import com.dfens.demo.domain.DfensEvent;
 import com.dfens.demo.network.NetClient;
@@ -54,6 +52,8 @@ public class DeviceListActivity extends Activity {
     @Extra(Constructor.EXTRAS_DFENS_EVENT)
     DfensEvent event;
 
+    SharedPreferences prefs;
+
     @Extra(Constructor.EXTRAS_DFENS_EVENT_SEQ_NO)
     int seqNo;
 
@@ -97,6 +97,7 @@ public class DeviceListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("Dfens", "OnCreate DeviceListActivity...");
+        prefs = getSharedPreferences("Dfens", MODE_PRIVATE);
 
         if (event != null) {
             //Receiving event from service
@@ -110,6 +111,83 @@ public class DeviceListActivity extends Activity {
 
         IntentFilter intentFilter = new IntentFilter("new_dfens_event");
         registerReceiver(dfensEventReceiver, intentFilter);
+
+    }
+
+    @AfterViews
+    public void setupViews() {
+        switch1.setChecked(prefs.getBoolean("switch_1", false));
+        switch2.setChecked(prefs.getBoolean("switch_2", false));
+        switch3.setChecked(prefs.getBoolean("switch_3", false));
+        switch4.setChecked(prefs.getBoolean("switch_4", false));
+        switch5.setChecked(prefs.getBoolean("switch_5", false));
+        switch6.setChecked(prefs.getBoolean("switch_6", false));
+        switch7.setChecked(prefs.getBoolean("switch_7", false));
+        switch8.setChecked(prefs.getBoolean("switch_8", false));
+        switch9.setChecked(prefs.getBoolean("switch_9", false));
+
+        switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_1", isChhecked).commit();
+            }
+        });
+
+        switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_2", isChhecked).commit();
+            }
+        });
+
+        switch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_3", isChhecked).commit();
+            }
+        });
+
+        switch4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_4", isChhecked).commit();
+            }
+        });
+
+        switch5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_5", isChhecked).commit();
+            }
+        });
+
+        switch6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_6", isChhecked).commit();
+            }
+        });
+
+        switch7.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_7", isChhecked).commit();
+            }
+        });
+
+        switch8.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_8", isChhecked).commit();
+            }
+        });
+
+        switch9.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChhecked) {
+                prefs.edit().putBoolean("switch_9", isChhecked).commit();
+            }
+        });
 
     }
 

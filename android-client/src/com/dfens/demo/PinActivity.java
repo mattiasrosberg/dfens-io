@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.App;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.NoTitle;
 import org.androidannotations.annotations.ViewById;
@@ -24,6 +24,9 @@ public class PinActivity extends Activity {
 
     @ViewById(R.id.pin_code_text)
     TextView pinCodeTextView;
+
+    @App
+    DfensApplication application;
 
     List<Integer> enteredPINCode = new ArrayList<Integer>();
 
@@ -44,6 +47,7 @@ public class PinActivity extends Activity {
         switch (button.getId()) {
             case R.id.button_enter:
                 if (enteredPINCode.size() == 4) {
+                    application.setKeepPollServiceRunning(isKeepPinServiceAlivePinCode());
                     startActivity(new Intent(this, DeviceListActivity_.class));
                     finish();
                 }
@@ -95,6 +99,15 @@ public class PinActivity extends Activity {
         if (enteredPINCode.size() < PIN_CODE_SIZE) {
             enteredPINCode.add(number);
         }
+    }
+
+    private boolean isKeepPinServiceAlivePinCode() {
+        for (Integer pinNbr : enteredPINCode) {
+            if (pinNbr != 5) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

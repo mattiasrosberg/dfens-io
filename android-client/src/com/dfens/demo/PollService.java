@@ -13,6 +13,7 @@ import com.dfens.demo.domain.DfensEvent;
 import com.dfens.demo.domain.DfensEventResponse;
 import com.dfens.demo.domain.PollEventResponse;
 import com.dfens.demo.network.NetClient;
+import org.androidannotations.annotations.App;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EIntentService;
 import org.androidannotations.annotations.ServiceAction;
@@ -25,10 +26,13 @@ import java.util.List;
 @EIntentService
 public class PollService extends IntentService {
 
-    private static final int MAX_POLL_TIME = 15 * 60 * 1000;   //15 minutes
+    private static final int MAX_POLL_TIME = 1 * 60 * 1000;   //15 minutes
 
     @Bean
     NetClient netClient;
+
+    @App
+    DfensApplication application;
 
     boolean keepRunning;
     private long startTime;
@@ -43,7 +47,7 @@ public class PollService extends IntentService {
 
         startTime = System.currentTimeMillis();
 
-        while (keepRunning && ((startTime + MAX_POLL_TIME) > System.currentTimeMillis())) {
+        while (keepRunning && (application.isKeepPollServiceRunning()) || ((startTime + MAX_POLL_TIME) > System.currentTimeMillis())) {
             try {
                 SharedPreferences prefs = getSharedPreferences("Dfens", MODE_PRIVATE);
                 PollEventResponse pollEventResponse = netClient.getAllEventsSinceSeqNo(prefs.getInt("maxSeqNo", 0));
