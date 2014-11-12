@@ -66,23 +66,29 @@ public class EventDialogActivity extends Activity {
     @Click(R.id.event_handler_unblock_button)
     public void onClickUnblockEvent(View button) {
         sendUnblockCommand();
+
+        prefs.edit().putInt("maxSeqNo", seqNo).commit();
+        setResult(RESULT_OK);
+        finish();
     }
 
     @Click(R.id.event_handler_keep_block_button)
     public void onClickKeepBlockButton(View button) {
         sendKeepBlockCommand();
+        
+        prefs.edit().putInt("maxSeqNo", seqNo).commit();
+        setResult(RESULT_OK);
+        finish();
     }
 
     @Background
     protected void sendUnblockCommand() {
         try {
             Status status = netClient.sendUnblockCommand(event);
-            if (status.ok) {
-                Log.d("Dfens", "Setting maxSeqNo to " + seqNo + " in EventDialogActivity");
-                prefs.edit().putInt("maxSeqNo", seqNo).commit();
-            }
-            setResult(RESULT_OK);
-            finish();
+//            if (status.ok) {
+//                Log.d("Dfens", "Setting maxSeqNo to " + seqNo + " in EventDialogActivity");
+//                prefs.edit().putInt("maxSeqNo", seqNo).commit();
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,12 +98,10 @@ public class EventDialogActivity extends Activity {
     protected void sendKeepBlockCommand() {
         try {
             Status status = netClient.sendKeepBlockCommand(event);
-            if (status.ok) {
-                Log.d("Dfens", "Setting maxSeqNo to " + seqNo + " in EventDialogActivity");
-                prefs.edit().putInt("maxSeqNo", seqNo).commit();
-            }
-            setResult(RESULT_OK);
-            finish();
+//            if (status.ok) {
+//                Log.d("Dfens", "Setting maxSeqNo to " + seqNo + " in EventDialogActivity");
+//                prefs.edit().putInt("maxSeqNo", seqNo).commit();
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
